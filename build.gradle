@@ -24,11 +24,10 @@ allprojects {
     apply plugin: "io.spring.dependency-management"
     dependencyManagement {
         dependencies {
+            imports {
+                mavenBom("org.springframework.boot:spring-boot-dependencies:2.6.6")
+            }
             dependency "com.google.guava:guava:${Versions.guava}"
         }
     }
-}
-
-task hello {
-    println 'Hello world!'
 }
