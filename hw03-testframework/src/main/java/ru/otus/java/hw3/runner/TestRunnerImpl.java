@@ -93,8 +93,7 @@ public class TestRunnerImpl implements TestRunner {
         methodsMap.put(TEST_KEY, testMethods);
         methodsMap.put(BEFORE_KEY, Collections.emptyList());
         methodsMap.put(AFTER_KEY, Collections.emptyList());
-        Arrays.stream(testClazz.getMethods())
-                .toList()
+        Arrays.asList(testClazz.getMethods())
                 .forEach(method -> {
                     if (method.isAnnotationPresent(Test.class)) {
                         testMethods.add(method);
