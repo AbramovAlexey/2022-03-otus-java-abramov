@@ -1,9 +1,19 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
+
+shadowJar {
+    archiveBaseName.set('hw03-testframework')
+    archiveVersion.set('0.1')
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Main-Class': 'ru.otus.java.hw3.Main'
+    }
+}
 
 tasks.withType(JavaCompile) {
     options.with {

@@ -41,6 +41,7 @@ public class TestRunnerImpl implements TestRunner {
                     failed++;
                     System.out.println("---FAILED");
                 }
+                currentIndex++;
             }
             Long endMs = System.currentTimeMillis();
             System.out.println(String.format("Passed - %d, failed - %d. Took %dms", passed, failed, endMs - startMs));
@@ -79,7 +80,11 @@ public class TestRunnerImpl implements TestRunner {
     }
 
     private void printException(Exception e) {
-        System.out.println(e.getMessage());
+        if (e instanceof InvocationTargetException) {
+            System.out.println(((InvocationTargetException) e).getTargetException().getMessage());
+        } else {
+            System.out.println(e.getMessage());
+        }
     }
 
     private Map<String, List<Method>> prepareMethods(Class<?> testClazz) {
