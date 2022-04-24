@@ -1,3 +1,4 @@
 rootProject.name = '2020-03-otus-java-abramov'
 include 'hw01-gradle'
 include 'hw02-collections'
+include 'hw03-testframework'
