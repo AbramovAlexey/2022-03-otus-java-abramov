@@ -1,10 +1,7 @@
 package hw5;
 
-import hw5.annotation.Log;
-
-class TestLogging {
-
-    @Log
-    public void calculation(int param) {};
-
+public interface TestLogging {
+    void calculation(int param);
+    void calculation(int param, int param2);
+    void calculation(int param, int param2, int param3);
 }
