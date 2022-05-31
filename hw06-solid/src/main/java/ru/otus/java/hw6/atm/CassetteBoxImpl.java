@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 
 public class CassetteBoxImpl implements CassetteBox{
 
-    Map<Nominal, Cassette> store = new HashMap<>();
+    private final Map<Nominal, Cassette> store = new HashMap<>();
 
     @Override
     public int getTotalAmount() {
