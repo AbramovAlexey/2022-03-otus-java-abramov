@@ -14,6 +14,7 @@ dependencies {
     testImplementation ('org.mockito:mockito-core')
     testImplementation ('org.mockito:mockito-junit-jupiter')
 
+    implementation project(':hw09-jdbc:demo')
     implementation 'ch.qos.logback:logback-classic'
     implementation 'org.flywaydb:flyway-core'
     implementation 'com.zaxxer:HikariCP'
