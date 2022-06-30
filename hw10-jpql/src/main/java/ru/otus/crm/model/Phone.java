@@ -10,7 +10,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Phone {
+public class Phone implements Cloneable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -28,6 +28,11 @@ public class Phone {
     public Phone(Long id, String number) {
         this.id = id;
         this.number = number;
+    }
+
+    @Override
+    public Phone clone() {
+        return new Phone(this.id, this.number);
     }
 
 }

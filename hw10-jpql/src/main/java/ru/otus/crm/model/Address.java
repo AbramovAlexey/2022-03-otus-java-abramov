@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Address {
+public class Address implements Cloneable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,5 +23,8 @@ public class Address {
     @Column(name = "street")
     private String street;
 
-
+    @Override
+    public Address clone() {
+        return new Address(this.id, this.street);
+    }
 }

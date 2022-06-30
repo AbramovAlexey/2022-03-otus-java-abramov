@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "client")
@@ -44,12 +46,18 @@ public class Client implements Cloneable {
         this.name = name;
         this.address = address;
         this.phones = phones;
-        phones.forEach(phone -> phone.setClient(this));
+        if (Objects.nonNull(phones)) {
+            phones.forEach(phone -> phone.setClient(this));
+        }
     }
 
     @Override
     public Client clone() {
-        return new Client(this.id, this.name, this.address, this.phones);
+        return new Client(this.id, this.name,
+                          Objects.nonNull(this.address) ? this.address.clone() : null,
+                          Objects.nonNull(this.phones) ? phones.stream()
+                                                               .map(Phone::clone)
+                                                               .collect(Collectors.toList()) : null);
     }
 
 }
