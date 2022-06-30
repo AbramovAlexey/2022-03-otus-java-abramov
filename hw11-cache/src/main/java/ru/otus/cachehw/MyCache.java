@@ -12,8 +12,8 @@ public class MyCache<K, V> implements HwCache<K, V> {
     private static final String ACTION_GET = "GET";
     private static final String ACTION_REMOVE = "REMOVE";
 
-    Map<K, V> store = new WeakHashMap<>();
-    List<HwListener<K,V>> listeners = new ArrayList<>();
+    private final Map<K, V> store = new WeakHashMap<>();
+    private final List<HwListener<K,V>> listeners = new ArrayList<>();
 
     @Override
     public void put(K key, V value) {

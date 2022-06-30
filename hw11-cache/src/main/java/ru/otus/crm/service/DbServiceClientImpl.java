@@ -2,11 +2,14 @@ package ru.otus.crm.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.cachehw.HwCache;
+import ru.otus.cachehw.MyCache;
 import ru.otus.core.repository.DataTemplate;
 import ru.otus.crm.model.Client;
 import ru.otus.core.sessionmanager.TransactionManager;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class DbServiceClientImpl implements DBServiceClient {
@@ -14,6 +17,7 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
+    private final HwCache<Long, Client> cache = new MyCache<>();
 
     public DbServiceClientImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
         this.transactionManager = transactionManager;
@@ -38,8 +42,13 @@ public class DbServiceClientImpl implements DBServiceClient {
     @Override
     public Optional<Client> getClient(long id) {
         return transactionManager.doInReadOnlyTransaction(session -> {
+            Client cachedClient = cache.get(id);
+            if (Objects.nonNull(cachedClient)) {
+                return Optional.of(cachedClient);
+            }
             var clientOptional = clientDataTemplate.findById(session, id);
             log.info("client: {}", clientOptional);
+            clientOptional.ifPresent(c -> cache.put(id, c));
             return clientOptional;
         });
     }
