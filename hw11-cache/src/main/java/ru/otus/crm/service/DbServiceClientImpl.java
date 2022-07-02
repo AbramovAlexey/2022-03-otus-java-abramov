@@ -41,11 +41,11 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     @Override
     public Optional<Client> getClient(long id) {
+        Client cachedClient = cache.get(id);
+        if (Objects.nonNull(cachedClient)) {
+            return Optional.of(cachedClient);
+        }
         return transactionManager.doInReadOnlyTransaction(session -> {
-            Client cachedClient = cache.get(id);
-            if (Objects.nonNull(cachedClient)) {
-                return Optional.of(cachedClient);
-            }
             var clientOptional = clientDataTemplate.findById(session, id);
             log.info("client: {}", clientOptional);
             clientOptional.ifPresent(c -> cache.put(id, c));
