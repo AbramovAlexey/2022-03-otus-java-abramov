@@ -37,7 +37,6 @@ public class ClientServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse response) throws IOException {
         dbServiceClient.saveClient(clientConverter.convertToClient(req));
-        System.out.println(req.getServletPath());
         response.sendRedirect(req.getServletPath());
     }
 

@@ -18,7 +18,6 @@ public class InMemoryLoginServiceImpl extends AbstractLoginService {
         this.userDao = userDao;
     }
 
-
     @Override
     protected List<RolePrincipal> loadRoleInfo(UserPrincipal userPrincipal) {
         return List.of(new RolePrincipal("user"));
