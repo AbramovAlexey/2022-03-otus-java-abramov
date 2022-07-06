@@ -1,7 +1,5 @@
 package ru.otus.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.server.Server;
@@ -10,9 +8,9 @@ import ru.otus.dao.InMemoryUserDao;
 import ru.otus.dao.UserDao;
 import ru.otus.server.ClientsWebServer;
 import ru.otus.server.ClientsWebServerWithBasicSecurity;
-import ru.otus.services.InMemoryLoginServiceImpl;
-import ru.otus.services.TemplateProcessor;
-import ru.otus.services.TemplateProcessorImpl;
+import ru.otus.service.InMemoryLoginServiceImpl;
+import ru.otus.service.TemplateProcessor;
+import ru.otus.service.TemplateProcessorImpl;
 
 import java.io.IOException;
 
@@ -27,10 +25,9 @@ public class WebServerConfigurationImpl implements WebServerConfiguration{
     @Override
     public ClientsWebServer configure() throws IOException {
         UserDao userDao = new InMemoryUserDao();
-        Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
         TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
         LoginService loginService = new InMemoryLoginServiceImpl(userDao);
-        return new ClientsWebServerWithBasicSecurity(loginService, gson, templateProcessor, new Server(WEB_SERVER_PORT), dbServiceClient);
+        return new ClientsWebServerWithBasicSecurity(loginService, templateProcessor, new Server(WEB_SERVER_PORT), dbServiceClient);
     }
 
 }

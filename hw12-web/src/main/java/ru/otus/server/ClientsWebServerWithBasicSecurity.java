@@ -1,6 +1,5 @@
 package ru.otus.server;
 
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -13,10 +12,10 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
-import ru.otus.helpers.ClientTemplateConverterImpl;
+import ru.otus.helpers.ClientConverterImpl;
 import ru.otus.helpers.FileSystemHelper;
 import ru.otus.service.DBServiceClient;
-import ru.otus.services.TemplateProcessor;
+import ru.otus.service.TemplateProcessor;
 import ru.otus.servlet.ClientServlet;
 
 import java.util.ArrayList;
@@ -35,11 +34,9 @@ public class ClientsWebServerWithBasicSecurity implements ClientsWebServer {
     private static final String PATH_CLIENTS = "/clients";
 
     private final LoginService loginService;
-    private final Gson gson;
     protected final TemplateProcessor templateProcessor;
     private final Server server;
     private final DBServiceClient dbServiceClient;
-
 
     @Override
     public void start() throws Exception {
@@ -79,7 +76,7 @@ public class ClientsWebServerWithBasicSecurity implements ClientsWebServer {
 
     private ServletContextHandler createServletContextHandler() {
         ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        servletContextHandler.addServlet(new ServletHolder(new ClientServlet(templateProcessor, dbServiceClient, new ClientTemplateConverterImpl())), PATH_CLIENTS);
+        servletContextHandler.addServlet(new ServletHolder(new ClientServlet(templateProcessor, dbServiceClient, new ClientConverterImpl())), PATH_CLIENTS);
         return servletContextHandler;
     }
 

@@ -34,16 +34,6 @@ public class Client implements Cloneable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client")
     private List<Phone> phones;
 
-    public Client(String name) {
-        this.id = null;
-        this.name = name;
-    }
-
-    public Client(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     public Client(Long id, String name, Address address, List<Phone> phones) {
         this.id = id;
         this.name = name;

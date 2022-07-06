@@ -1,4 +1,4 @@
-package ru.otus.crm.service;
+package ru.otus.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

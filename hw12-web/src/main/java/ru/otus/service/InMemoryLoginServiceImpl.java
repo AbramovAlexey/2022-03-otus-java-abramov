@@ -1,4 +1,4 @@
-package ru.otus.services;
+package ru.otus.service;
 
 import org.eclipse.jetty.security.AbstractLoginService;
 import org.eclipse.jetty.security.RolePrincipal;
@@ -30,4 +30,5 @@ public class InMemoryLoginServiceImpl extends AbstractLoginService {
         Optional<User> dbUser = userDao.findByLogin(login);
         return dbUser.map(u -> new UserPrincipal(u.getLogin(), new Password(u.getPassword()))).orElse(null);
     }
+
 }
