@@ -3,9 +3,9 @@ package ru.otus.crm.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.base.AbstractHibernateTest;
-import ru.otus.crm.model.Address;
-import ru.otus.crm.model.Client;
-import ru.otus.crm.model.Phone;
+import ru.otus.model.Address;
+import ru.otus.model.Client;
+import ru.otus.model.Phone;
 
 import java.util.ArrayList;
 import java.util.List;
