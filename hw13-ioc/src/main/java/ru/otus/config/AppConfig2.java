@@ -4,13 +4,8 @@ import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
 import ru.otus.services.*;
 
-@AppComponentsContainerConfig(order = 1)
-public class AppConfig {
-
-    @AppComponent(order = 0, name = "equationPreparer")
-    public EquationPreparer equationPreparer(){
-        return new EquationPreparerImpl();
-    }
+@AppComponentsContainerConfig(order = 2)
+public class AppConfig2 {
 
     @AppComponent(order = 1, name = "playerService")
     public PlayerService playerService(IOService ioService) {
@@ -22,11 +17,6 @@ public class AppConfig {
                                        PlayerService playerService,
                                        EquationPreparer equationPreparer) {
         return new GameProcessorImpl(ioService, equationPreparer, playerService);
-    }
-
-    @AppComponent(order = 0, name = "ioService")
-    public IOService ioService() {
-        return new IOServiceStreams(System.out, System.in);
     }
 
 }

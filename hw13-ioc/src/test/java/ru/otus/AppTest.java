@@ -4,7 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import ru.otus.appcontainer.AppComponentsContainerImpl;
-import ru.otus.config.AppConfig;
+import ru.otus.config.AppConfig1;
+import ru.otus.config.AppConfig2;
 import ru.otus.services.EquationPreparer;
 import ru.otus.services.IOService;
 import ru.otus.services.PlayerService;
@@ -38,7 +39,7 @@ class AppTest {
             "equationPreparer, ru.otus.services.EquationPreparer"
     })
     public void shouldExtractFromContextCorrectComponentWithNotNullFields(String classNameOrBeanId, Class<?> rootClass) throws Exception {
-        var ctx = new AppComponentsContainerImpl(AppConfig.class);
+        var ctx = new AppComponentsContainerImpl(AppConfig2.class, AppConfig1.class);
 
         assertThat(classNameOrBeanId).isNotEmpty();
         Object component;
