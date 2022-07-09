@@ -17,8 +17,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     public AppComponentsContainerImpl(Class<?> ...initialConfigClasses) {
         var configs = Arrays.stream(initialConfigClasses)
-                                  .filter(cls -> cls.isAnnotationPresent(AppComponentsContainerConfig.class))
-                                  .collect(Collectors.toSet());
+                            .collect(Collectors.toSet());
         processConfigs(configs);
     }
 
@@ -64,8 +63,8 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
         var beans = appComponents.stream()
-                                             .filter(bean -> componentClass.isAssignableFrom(bean.getClass()))
-                                             .toList();
+                                 .filter(bean -> componentClass.isAssignableFrom(bean.getClass()))
+                                 .toList();
         if (beans.size() == 1) {
             return (C) beans.get(0);
         } else {
