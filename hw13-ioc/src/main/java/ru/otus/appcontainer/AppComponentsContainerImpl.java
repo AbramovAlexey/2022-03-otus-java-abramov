@@ -73,7 +73,8 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     }
     @Override
     public <C> C getAppComponent(String componentName) {
-        return (C) appComponentsByName.get(componentName);
+        return Optional.ofNullable((C) appComponentsByName.get(componentName))
+                       .orElseThrow(() -> new RuntimeException("Fail to determine bean for name - %s".formatted(componentName)));
     }
 
 }
