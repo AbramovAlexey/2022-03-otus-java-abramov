@@ -8,4 +8,5 @@ public interface DBServiceClient {
 
     List<Client> findAll();
 
+    Client save(Client client);
 }

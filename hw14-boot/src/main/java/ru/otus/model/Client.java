@@ -1,29 +1,33 @@
 package ru.otus.model;
 
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 @Table(name = "client")
+@Getter
+@ToString
 public class Client implements Cloneable {
 
     @Id
-    private Long id;
+    private final Long id;
 
-    private String name;
-
-    @MappedCollection(idColumn = "address_id")
-    private Address address;
+    private final String name;
 
     @MappedCollection(idColumn = "client_id")
-    private List<Phone> phones;
+    private final Address address;
 
-    public Client(Long id, String name, Address address, List<Phone> phones) {
+    @MappedCollection(idColumn = "client_id", keyColumn = "number")
+    private final List<Phone> phones;
+
+    @PersistenceCreator
+    public Client(Long id, String name,Address address, List<Phone> phones) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -33,13 +37,13 @@ public class Client implements Cloneable {
         }*/
     }
 
-    @Override
+   /* @Override
     public Client clone() {
         return new Client(this.id, this.name,
                           Objects.nonNull(this.address) ? this.address.clone() : null,
                           Objects.nonNull(this.phones) ? phones.stream()
                                                                .map(Phone::clone)
                                                                .collect(Collectors.toList()) : null);
-    }
+    }*/
 
 }

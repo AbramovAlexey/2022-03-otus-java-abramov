@@ -8,7 +8,9 @@ spring:
     password: pwd
   flyway:
     enabled: true
+    baselineOnMigrate: true
 
 logging:
   level:
     org.springframework.jdbc.core.JdbcTemplate: TRACE
+    org.springframework.jdbc.core.StatementCreatorUtils: TRACE
