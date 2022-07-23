@@ -7,8 +7,8 @@ import ru.otus.model.Client;
 import ru.otus.model.Phone;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,11 +17,11 @@ public class DtoConverterImpl implements DtoConverter{
     @Override
     public Client dtoToClient(ClientDto clientDto) {
         var phonesStr = clientDto.getPhones();
-        List<Phone> phones = null;
+        Set<Phone> phones = null;
         if (Objects.nonNull(phonesStr) && !phonesStr.isBlank()) {
             phones = Arrays.stream(phonesStr.split(","))
                            .map(Phone::new)
-                           .collect(Collectors.toList());
+                           .collect(Collectors.toSet());
         }
         return new Client(clientDto.getId(),
                           clientDto.getName(),

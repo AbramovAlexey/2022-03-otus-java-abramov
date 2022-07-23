@@ -10,7 +10,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table(name = "phone")
 @Getter
 @ToString
-public class Phone implements Cloneable{
+public class Phone {
 
     @Id
     private Long clientId;
@@ -25,11 +25,6 @@ public class Phone implements Cloneable{
     public Phone(Long clientId, String number) {
         this.clientId = clientId;
         this.number = number;
-    }
-
-    @Override
-    public Phone clone() {
-        return new Phone(this.clientId, this.number);
     }
 
 }
