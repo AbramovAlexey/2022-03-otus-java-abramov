@@ -2,61 +2,59 @@ package ru.otus.protobuf;
 
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import ru.otus.protobuf.generated.Empty;
-import ru.otus.protobuf.generated.RemoteDBServiceGrpc;
-import ru.otus.protobuf.generated.UserMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.otus.protobuf.generated.GeneratedResponse;
+import ru.otus.protobuf.generated.RemoteServiceGrpc;
+import ru.otus.protobuf.generated.RequestRange;
 
 import java.util.concurrent.CountDownLatch;
 
 public class GRPCClient {
 
+    private static final Logger log = LoggerFactory.getLogger(GRPCClient.class);
     private static final String SERVER_HOST = "localhost";
     private static final int SERVER_PORT = 8190;
+    private static final int FIRST = 0;
+    private static final int LAST = 30;
 
     public static void main(String[] args) throws InterruptedException {
+       new GRPCClient().start();
+    }
+
+    private void start() throws InterruptedException{
         var channel = ManagedChannelBuilder.forAddress(SERVER_HOST, SERVER_PORT)
-                .usePlaintext()
-                .build();
-
-        var stub = RemoteDBServiceGrpc.newBlockingStub(channel);
-        var savedUserMsg = stub.saveUser(
-                UserMessage.newBuilder().setFirstName("Вася").setLastName("Кириешкин").build()
-        );
-
-        System.out.printf("Мы сохранили Васю: {id: %d, name: %s %s}%n",
-                savedUserMsg.getId(), savedUserMsg.getFirstName(), savedUserMsg.getLastName());
-
-        var allUsersIterator = stub.findAllUsers(Empty.getDefaultInstance());
-        System.out.println("Конградулейшенз! Мы получили юзеров! Среди них должен найтись один Вася!");
-        allUsersIterator.forEachRemaining(um ->
-                System.out.printf("{id: %d, name: %s %s}%n",
-                        um.getId(), um.getFirstName(), um.getLastName())
-        );
-
-        System.out.println("\n\n\nА теперь тоже самое, только асинхронно!!!\n\n");
+                                           .usePlaintext()
+                                           .build();
         var latch = new CountDownLatch(1);
-        var newStub = RemoteDBServiceGrpc.newStub(channel);
-        newStub.findAllUsers(Empty.getDefaultInstance(), new StreamObserver<UserMessage>() {
+        var newStub = RemoteServiceGrpc.newStub(channel);
+        newStub.requestSequence(prepareRequest(), new StreamObserver<>() {
             @Override
-            public void onNext(UserMessage um) {
-                System.out.printf("{id: %d, name: %s %s}%n",
-                        um.getId(), um.getFirstName(), um.getLastName());
+            public void onNext(GeneratedResponse value) {
+               log.info("new value {}", value.getCurrentValue());
             }
 
             @Override
             public void onError(Throwable t) {
-                System.err.println(t);
+                log.error("Error during request processing", t);
             }
 
             @Override
             public void onCompleted() {
-                System.out.println("\n\nЯ все!");
+                log.info("Done");
                 latch.countDown();
             }
         });
-
         latch.await();
-
         channel.shutdown();
     }
+
+    private RequestRange prepareRequest() {
+        return RequestRange.newBuilder()
+                .setFirstValue(FIRST)
+                .setLastValue(LAST)
+                .build();
+    }
+
+
 }
