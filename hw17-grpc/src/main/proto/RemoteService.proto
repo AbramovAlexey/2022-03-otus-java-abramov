@@ -10,7 +10,7 @@ message RequestRange {
 }
 
 message GeneratedResponse {
-    int32 currentValue = 1;
+    int32 newValue = 1;
 }
 
 service RemoteService {

@@ -8,10 +8,13 @@ import ru.otus.protobuf.generated.GeneratedResponse;
 import ru.otus.protobuf.generated.RemoteServiceGrpc;
 import ru.otus.protobuf.generated.RequestRange;
 
+import java.util.concurrent.TimeUnit;
+
 @RequiredArgsConstructor
 public class RemoteServiceImpl extends RemoteServiceGrpc.RemoteServiceImplBase {
 
     private static final Logger log = LoggerFactory.getLogger(RemoteServiceImpl.class);
+    private static final int DELAY_SEC = 2;
     private final SequenceGenerator sequenceGenerator;
 
     @Override
@@ -20,6 +23,11 @@ public class RemoteServiceImpl extends RemoteServiceGrpc.RemoteServiceImplBase {
         var sequence = sequenceGenerator.generate(request.getFirstValue(), request.getLastValue());
         sequence.forEach(number -> {
             responseObserver.onNext(number2GeneratedResponse(number));
+            try {
+                TimeUnit.SECONDS.sleep(DELAY_SEC);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
         responseObserver.onCompleted();
         log.info("Request processing done");
@@ -27,7 +35,7 @@ public class RemoteServiceImpl extends RemoteServiceGrpc.RemoteServiceImplBase {
 
     private GeneratedResponse number2GeneratedResponse(Integer number) {
         return GeneratedResponse.newBuilder()
-                .setCurrentValue(number)
+                .setNewValue(number)
                 .build();
     }
 

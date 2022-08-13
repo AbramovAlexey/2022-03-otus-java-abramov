@@ -9,13 +9,13 @@ import ru.otus.protobuf.service.SequenceGeneratorImpl;
 
 import java.io.IOException;
 
-public class GRPCServer {
+public class NumbersServer {
 
-    private static final Logger log = LoggerFactory.getLogger(GRPCServer.class);
+    private static final Logger log = LoggerFactory.getLogger(NumbersServer.class);
     public static final int SERVER_PORT = 8190;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        new GRPCServer().start();
+        new NumbersServer().start();
     }
 
     private void start() throws IOException, InterruptedException {

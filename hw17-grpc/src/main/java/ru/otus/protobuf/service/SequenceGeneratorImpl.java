@@ -7,7 +7,7 @@ public class SequenceGeneratorImpl implements SequenceGenerator{
 
     @Override
     public List<Integer> generate(int first, int last) {
-        return IntStream.rangeClosed(first, last)
+        return IntStream.rangeClosed(first + 1, last)
                         .boxed().toList();
     }
 
