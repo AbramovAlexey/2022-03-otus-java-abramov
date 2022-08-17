@@ -8,10 +8,9 @@ import ru.otus.protobuf.generated.GeneratedResponse;
 import ru.otus.protobuf.generated.RemoteServiceGrpc;
 import ru.otus.protobuf.generated.RequestRange;
 
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class NumbersClient {
 
@@ -24,8 +23,7 @@ public class NumbersClient {
     private static final int LAST_CYCLE = 50;
     private static final int DELAY_SEC = 1;
 
-    private final ReentrantLock reentrantLock = new ReentrantLock(true);
-    private Integer lastServerValue;
+    private AtomicInteger lastServerValue = new AtomicInteger();
 
     public static void main(String[] args) throws InterruptedException {
        new NumbersClient().start();
@@ -35,14 +33,13 @@ public class NumbersClient {
         var channel = ManagedChannelBuilder.forAddress(SERVER_HOST, SERVER_PORT)
                                            .usePlaintext()
                                            .build();
-        lastServerValue = null;
         var newStub = RemoteServiceGrpc.newStub(channel);
         var latch = new CountDownLatch(1);
         log.info("numbers Client is starting...");
         newStub.requestSequence(prepareRequest(), new StreamObserver<>() {
             @Override
             public void onNext(GeneratedResponse value) {
-               setLastServerValueSync(value.getNewValue());
+               lastServerValue.set(value.getNewValue());
                log.info("new value {}", value.getNewValue());
             }
 
@@ -59,7 +56,7 @@ public class NumbersClient {
         });
         var currentValue = 0;
         for (int i = FIRST_CYCLE; i < LAST_CYCLE; i++) {
-            currentValue += 1 + getLastValueAndClearSync();
+            currentValue += 1 + lastServerValue.getAndSet(0);
             log.info("currentValue {}", currentValue);
             TimeUnit.SECONDS.sleep(DELAY_SEC);
         }
@@ -72,23 +69,6 @@ public class NumbersClient {
                 .setFirstValue(FIRST_REQUEST)
                 .setLastValue(LAST_REQUEST)
                 .build();
-    }
-
-    private void setLastServerValueSync(Integer value) {
-        reentrantLock.lock();
-        lastServerValue = value;
-        reentrantLock.unlock();
-    }
-
-    private Integer getLastValueAndClearSync() {
-        int value = 0;
-        reentrantLock.lock();
-        if (Objects.nonNull(lastServerValue)) {
-            value = lastServerValue;
-            lastServerValue = null;
-        }
-        reentrantLock.unlock();
-        return value;
     }
 
 }
