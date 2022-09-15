@@ -11,6 +11,8 @@ spring:
     user: usr
     password: pwd
 
+room:
+  showAllId: 1408
 
 logging:
   level:

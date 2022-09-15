@@ -35,7 +35,7 @@ public class DataController {
 
         var msgId = Mono.just(new Message(roomId, messageStr))
                 .doOnNext(msg -> log.info("msg saving:{}", msg))
-                .flatMap(dataStore::saveMessage)
+                .flatMap(msg -> dataStore.saveMessage(msg, roomId))
                 .publishOn(workerPool)
                 .doOnNext(msgSaved -> log.info("msgSaved id:{}", msgSaved.getId()))
                 .map(Message::getId)

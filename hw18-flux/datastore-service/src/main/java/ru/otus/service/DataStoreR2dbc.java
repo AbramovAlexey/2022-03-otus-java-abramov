@@ -16,6 +16,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 @Service
 public class DataStoreR2dbc implements DataStore {
     private static final Logger log = LoggerFactory.getLogger(DataStoreR2dbc.class);
+    private static String ROOM_SEE_ALL = "1408";
     private final MessageRepository messageRepository;
     private final Scheduler workerPool;
 
@@ -25,15 +26,24 @@ public class DataStoreR2dbc implements DataStore {
     }
 
     @Override
-    public Mono<Message> saveMessage(Message message) {
+    public Mono<Message> saveMessage(Message message, String roomId) {
         log.info("saveMessage:{}", message);
-        return messageRepository.save(message);
+        if (ROOM_SEE_ALL.equals(roomId)) {
+            log.info("message ignored for this room");
+            return Mono.empty();
+        } else {
+            return messageRepository.save(message);
+        }
     }
 
     @Override
     public Flux<Message> loadMessages(String roomId) {
         log.info("loadMessages roomId:{}", roomId);
-        return messageRepository.findByRoomId(roomId)
-                .delayElements(Duration.of(3, SECONDS), workerPool);
+        if (ROOM_SEE_ALL.equals(roomId)) {
+            return messageRepository.findAll();
+        } else {
+            return messageRepository.findByRoomId(roomId)
+                    .delayElements(Duration.of(3, SECONDS), workerPool);
+        }
     }
 }
