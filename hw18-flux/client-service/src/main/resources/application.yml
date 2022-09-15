@@ -3,6 +3,3 @@ server:
 
 datastore:
   url: http://localhost:8081
-
-room:
-  showAllId: 1408
