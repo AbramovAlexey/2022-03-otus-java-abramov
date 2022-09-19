@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.util.HtmlUtils;
@@ -22,8 +23,9 @@ import ru.otus.domain.Message;
 public class MessageController {
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
+    private static final String ROOM_ID_SEE_ALL = "1408";
     private static final String TOPIC_TEMPLATE = "/topic/response.";
-    private static final String TOPIC_SEE_ALL = TOPIC_TEMPLATE + "1408";
+    private static final String TOPIC_SEE_ALL = TOPIC_TEMPLATE + ROOM_ID_SEE_ALL;
 
     private final WebClient datastoreClient;
     private final SimpMessagingTemplate template;
@@ -33,13 +35,25 @@ public class MessageController {
         this.template = template;
     }
 
+    private static Flux<Message> processResponse(ClientResponse response) {
+        if (response.statusCode().equals(HttpStatus.OK)) {
+            return response.bodyToFlux(Message.class);
+        } else {
+            return response.createException().flatMapMany(Mono::error);
+        }
+    }
+
     @MessageMapping("/message.{roomId}")
     @SendTo({TOPIC_TEMPLATE + "{roomId}", TOPIC_SEE_ALL})
     public Message getMessage(@DestinationVariable String roomId, Message message) {
         logger.info("got message:{}, roomId:{}", message, roomId);
-        saveMessage(roomId, message)
-                .subscribe(msgId -> logger.info("message send id:{}", msgId));
-        return new Message(HtmlUtils.htmlEscape(message.messageStr()));
+        if (ROOM_ID_SEE_ALL.equals(roomId)) {
+            logger.info("cannot send message from this room");
+            return null;
+        } else {
+            saveMessage(roomId, message).subscribe(msgId -> logger.info("message send id:{}", msgId));
+            return new Message(HtmlUtils.htmlEscape(message.messageStr()));
+        }
     }
 
 
@@ -53,9 +67,9 @@ public class MessageController {
         }
         var roomId = parseRoomId(simpDestination);
 
-        getMessagesByRoomId(roomId)
-                .doOnError(ex -> logger.error("getting messages for roomId:{} failed", roomId, ex))
-                .subscribe(message -> template.convertAndSend(simpDestination, message));
+        Flux<Message> messageFlux = Long.parseLong(ROOM_ID_SEE_ALL) == roomId ? getAllMessages() : getMessagesByRoomId(roomId);
+        messageFlux.doOnError(ex -> logger.error("getting messages for roomId:{} failed", roomId, ex))
+                   .subscribe(message -> template.convertAndSend(simpDestination, message));
     }
 
     private long parseRoomId(String simpDestination) {
@@ -77,12 +91,14 @@ public class MessageController {
     private Flux<Message> getMessagesByRoomId(long roomId) {
         return datastoreClient.get().uri(String.format("/msg/%s", roomId))
                 .accept(MediaType.APPLICATION_NDJSON)
-                .exchangeToFlux(response -> {
-                    if (response.statusCode().equals(HttpStatus.OK)) {
-                        return response.bodyToFlux(Message.class);
-                    } else {
-                        return response.createException().flatMapMany(Mono::error);
-                    }
-                });
+                .exchangeToFlux(MessageController::processResponse);
     }
+
+    private Flux<Message> getAllMessages() {
+        return datastoreClient.get().uri("/msg")
+                .accept(MediaType.APPLICATION_NDJSON)
+                .exchangeToFlux(MessageController::processResponse);
+    }
+
+
 }
